@@ -1,20 +1,19 @@
 package co.uk.contactroom;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
-import java.util.List;
-
-import co.uk.contactroom.model.Contact;
-import co.uk.contactroom.model.ContactViewModel;
+import co.uk.contactroom.model.Fitter;
+import co.uk.contactroom.model.FitterViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ContactViewModel contactViewModel;
+    private FitterViewModel fitterViewModel;
+    private TextView tv;
 
 
     @Override
@@ -22,15 +21,24 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        contactViewModel = new ViewModelProvider.AndroidViewModelFactory(MainActivity.this
-                .getApplication())
-                .create(ContactViewModel.class);
 
-        contactViewModel.getAllContacts().observe(this, contacts -> {
-            for(Contact contact: contacts){
+
+        tv = findViewById(R.id.tv1);
+        fitterViewModel = new ViewModelProvider.AndroidViewModelFactory(MainActivity.this
+                .getApplication())
+                .create(FitterViewModel.class);
+
+
+        fitterViewModel.getAllContacts().observe(this, contacts -> {
+            StringBuilder sb = new StringBuilder();
+            for(Fitter contact: contacts){
                 Log.d("TAG", "onCreate: " + contact.getName());
+                sb.append(contact.getName() + " ");
             }
+            tv.setText(sb.toString());
 
         });
+
+
     }
 }

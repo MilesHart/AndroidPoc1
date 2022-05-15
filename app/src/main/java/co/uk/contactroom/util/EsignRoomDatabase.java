@@ -11,26 +11,29 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import co.uk.contactroom.data.ContactDao;
-import co.uk.contactroom.model.Contact;
+import co.uk.contactroom.data.FitterDao;
+import co.uk.contactroom.data.ManifestDao;
+import co.uk.contactroom.model.Fitter;
+import co.uk.contactroom.model.Manifest;
 
-@Database(entities = {Contact.class}, version = 1, exportSchema = false)
-public abstract class ContactRoomDatabase extends RoomDatabase {
+@Database(entities = {Fitter.class, Manifest.class}, version = 1, exportSchema = false)
+public abstract class EsignRoomDatabase extends RoomDatabase {
 
-    public abstract ContactDao contactDao();
+    public abstract FitterDao fitterDao();
+    public abstract ManifestDao manifestDao();
 
     public static final int NUMBER_OF_THREADS = 4;
 
-    private static volatile ContactRoomDatabase INSTANCE;
+    private static volatile EsignRoomDatabase INSTANCE;
     public static final ExecutorService databaseWriteExecutor
             = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
-    public static ContactRoomDatabase getDatabase(final Context context){
+    public static EsignRoomDatabase getDatabase(final Context context){
         if (INSTANCE == null) {
-            synchronized (ContactRoomDatabase.class){
+            synchronized (EsignRoomDatabase.class){
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            ContactRoomDatabase.class, "contact_database")
+                            EsignRoomDatabase.class, "esign_database")
                             .addCallback(sRoomDatabaseCallback)
                             .build();
 
@@ -47,14 +50,21 @@ public abstract class ContactRoomDatabase extends RoomDatabase {
                     super.onCreate(db);
 
                     databaseWriteExecutor.execute(() ->{
-                        ContactDao contactDao = INSTANCE.contactDao();
+                        FitterDao contactDao = INSTANCE.fitterDao();
                         contactDao.deleteAll();
 
-                        Contact contact = new Contact("Milo", "Dev");
+                        Fitter contact = new Fitter("Milo", "Dev", "1234");
                         contactDao.insert(contact);
 
-                        contact = new Contact("Bond", "Spy");
+                        contact = new Fitter("Bond", "Spy", "1234");
                         contactDao.insert(contact);
+
+
+                        contact = new Fitter("Billy", "Plumber", "1234");
+                        contactDao.insert(contact);
+
+
+
 
                     });
                 }
