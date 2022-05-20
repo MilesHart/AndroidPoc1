@@ -28,4 +28,7 @@ public interface FitterDao {
     @Query("SELECT * FROM fitter_table WHERE name==:name")
     LiveData<Fitter> getContactByName(String name);
 
+//    @Query("SELECT * FROM fitter_table WHERE name==:name LIMIT 1")
+//    Boolean exist(String name);
+
 }

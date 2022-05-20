@@ -1,8 +1,10 @@
 package co.uk.contactroom;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
+import android.database.Observable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +13,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import co.uk.contactroom.model.ApiFitter;
+import co.uk.contactroom.model.Fitter;
+import co.uk.contactroom.model.FitterViewModel;
 import co.uk.contactroom.model.LoginResp;
 import co.uk.contactroom.remote.ApiUtils;
 import co.uk.contactroom.remote.UserService;
@@ -18,7 +22,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LoginActivity extends AppCompatActivity {
+public class   LoginActivity extends AppCompatActivity {
+
+    private FitterViewModel fitterViewModel;
 
     private EditText txtUsername;
     private EditText txtPassword;
@@ -27,16 +33,44 @@ public class LoginActivity extends AppCompatActivity {
     UserService userService;
 
 
+
+
+
+
+
+
+
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        fitterViewModel = new ViewModelProvider.AndroidViewModelFactory(LoginActivity.this
+                .getApplication())
+                .create(FitterViewModel.class);
+
 
         userService = ApiUtils.getUserService();
 
         txtUsername = findViewById(R.id.txtUsername);
         txtPassword = findViewById(R.id.txtPassword);
         btnLogin = findViewById(R.id.btnLogin);
+
+
+                                fitterViewModel.getAllContacts().observe(this, fitters -> {
+                            StringBuilder sb = new StringBuilder();
+                            for(Fitter fiter: fitters){
+                                Log.d("TAG", "onCreate: " + fiter.getName());
+                                sb.append(fiter.getName() + " ");
+                            }
+                                    Toast.makeText(this, sb.toString(), Toast.LENGTH_SHORT).show();
+
+
+                        });
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,8 +104,24 @@ public class LoginActivity extends AppCompatActivity {
         ApiFitter apifitter = new ApiFitter();
         apifitter.setName(username);
         apifitter.setPin(password);
+
+
+
+        fitterViewModel.getContact("Milo").observe(this, fitters -> {
+            Toast.makeText(this, fitters.getPin(), Toast.LENGTH_SHORT).show();
+        });
+//        fitterViewModel.getAllContacts().observe(this, fitters -> {
+//                            StringBuilder sb = new StringBuilder();
+//                            for(Fitter fiter: fitters){
+//                                Log.d("TAG", "onCreate: " + fiter.getName());
+//                                sb.append(fiter.getName() + " ");
+//                            }
+//            Toast.makeText(this, sb.toString(), Toast.LENGTH_SHORT).show();
+//                        });
+
         // Send a REST request
         Call call = userService.login(apifitter);
+
 
         call.enqueue(new Callback() {
             @Override
@@ -81,6 +131,24 @@ public class LoginActivity extends AppCompatActivity {
 
                     LoginResp resObj = (LoginResp) response.body();
                     if(resObj.getSuccess().equals("success")){
+
+
+
+
+
+
+//                        fitterViewModel.getAllContacts().observe(this, fitters -> {
+//                            StringBuilder sb = new StringBuilder();
+//                            for(Fitter fiter: fitters){
+//                                Log.d("TAG", "onCreate: " + fiter.getName());
+//                                sb.append(fiter.getName() + " ");
+//                            }
+//                            tv.setText(sb.toString());
+//
+//                        });
+
+
+
 //                        if (dbHandler.IsFitterExists(fitter.getName())){
 //                            dbHandler.updateFitter(fitter.getName(), fitter.getPin(), resObj.getAccess_token(), resObj.getResource_id());
 //                            Toast.makeText(LoginActivity.this, "Online login successful, updating local cache", Toast.LENGTH_SHORT).show();

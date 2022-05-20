@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class ApiFitter {
 
+    public ApiFitter() {
+    }
+
     public String getName() {
         return name;
     }
